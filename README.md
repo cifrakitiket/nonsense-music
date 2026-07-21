@@ -1,30 +1,30 @@
 # Nonsense Music
 
-Desktop music player and YouTube downloader built with **Qt 6** and **C++20**.
+Десктопный музыкальный плеер и загрузчик YouTube, написанный на **Qt 6** и **C++20**.
 
-## Features
+## Возможности
 
-- **Music Library** — import local audio files, organize into playlists, mark favorites, browse by artists
-- **YouTube Downloader** — paste a YouTube link, download and convert to MP3 automatically via [yt-dlp](https://github.com/yt-dlp/yt-dlp) + FFmpeg
-- **Audio Playback** — play, pause, seek, volume control, playback queue
-- **Mini Player** — compact floating player for background listening
-- **System Tray** — minimize to tray, control playback from tray menu
-- **3 Dark Themes** — Spotify Dark, Coffee Dark (warm brown), Moss Dark (olive green)
-- **4 Languages** — English, Russian, Ukrainian, Russian Pre-Reform
-- **Dynamic Background** — album art as window background
-- **Metadata Editing** — edit track info (title, artist, album) via TagLib
-- **Cloud Account** — login/register for cloud sync
-- **YouTube Bypass Options** — ByeDPI proxy, Chrome user-agent spoofing, browser cookies support
+- **Музыкальная библиотека** — импорт локальных аудиофайлов, плейлисты, избранное, просмотр по исполнителям
+- **Загрузчик YouTube** — вставь ссылку на YouTube, скачай и конвертируй в MP3 автоматически через [yt-dlp](https://github.com/yt-dlp/yt-dlp) + FFmpeg
+- **Воспроизведение** — play, пауза, перемотка, громкость, очередь воспроизведения
+- **Мини-плеер** — компактный плавающий плеер для фонового прослушивания
+- **Системный трей** — сворачивание в трей, управление воспроизведением из меню трея
+- **3 тёмные темы** — Spotify Dark, Coffee Dark (тёплый коричневый), Moss Dark (оливковый)
+- **4 языка** — английский, русский, украинский, русский дореформенный
+- **Динамический фон** — обложка трека на фоне окна
+- **Редактирование метаданных** — изменение информации о треке (название, исполнитель, альбом) через TagLib
+- **Облачный аккаунт** — вход/регистрация для облачной синхронизации
+- **Обход блокировок YouTube** — ByeDPI прокси, подмена User-Agent под Chrome, использование куки браузера
 
-## Requirements
+## Требования
 
 - **Qt 6** (Widgets, Sql, Multimedia, Network)
 - **CMake** 3.16+
-- **C++20** compatible compiler (MinGW or MSVC)
-- **yt-dlp.exe** — placed next to the built executable (auto-downloaded by installer)
-- **ffmpeg.exe** — required for MP3 conversion (auto-downloaded by installer)
+- **C++20** совместимый компилятор (MinGW или MSVC)
+- **yt-dlp.exe** — рядом с исполняемым файлом (автоматически скачивается инсталлятором)
+- **ffmpeg.exe** — нужен для конвертации в MP3 (автоматически скачивается инсталлятором)
 
-## Building
+## Сборка
 
 ```bash
 mkdir build && cd build
@@ -32,52 +32,52 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --config Release
 ```
 
-Or open the project directly in **Qt Creator** and build from there.
+Или открой проект напрямую в **Qt Creator** и собирай оттуда.
 
-## Creating an Installer
+## Создание инсталлятора
 
-Requires [Inno Setup 6](https://jrsoftware.org/isinfo.php). Run:
+Требуется [Inno Setup 6](https://jrsoftware.org/isinfo.php). Запусти:
 
 ```bash
 build_installer.bat
 ```
 
-The installer will be created at `Release_Installer/NonsenseMusic_Setup.exe`. It automatically downloads the latest `yt-dlp.exe` and `ffmpeg.exe` during installation.
+Инсталлятор будет создан в `Release_Installer/NonsenseMusic_Setup.exe`. Во время установки он автоматически скачивает последние версии `yt-dlp.exe` и `ffmpeg.exe`.
 
-## Project Structure
+## Структура проекта
 
 ```
 src/
-  main.cpp                  # Entry point
-  mainwindow.cpp/h          # Main window, tab navigation, tray
+  main.cpp                  # Точка входа
+  mainwindow.cpp/h          # Главное окно, навигация, трей
   core/
-    AudioPlayer.cpp/h       # Audio playback (Qt Multimedia)
-    LibraryManager.cpp/h    # SQLite database, track/playlist management
-    DownloadManager.cpp/h   # YouTube download via yt-dlp
-    MetadataManager.cpp/h   # Audio tag read/write (TagLib)
-    CloudManager.cpp/h      # Cloud account API
+    AudioPlayer.cpp/h       # Воспроизведение аудио (Qt Multimedia)
+    LibraryManager.cpp/h    # База SQLite, управление треками и плейлистами
+    DownloadManager.cpp/h   # Загрузка YouTube через yt-dlp
+    MetadataManager.cpp/h   # Чтение/запись аудио тегов (TagLib)
+    CloudManager.cpp/h      # API облачного аккаунта
   ui/
-    Sidebar.cpp/h           # Left navigation panel
-    PlayerBar.cpp/h         # Bottom player controls
-    LibraryView.cpp/h       # Tracks, playlists, artists browser
-    DownloadsView.cpp/h     # YouTube download interface
-    SettingsView.cpp/h      # App settings (theme, language, paths)
-    AuthView.cpp/h          # Login/register screen
-    MiniPlayer.cpp/h        # Compact floating player
-    TrackCard.cpp/h         # Track display card
-    TrackList.cpp/h         # Track list with sorting
-    EditTrackDialog.cpp/h   # Edit track metadata dialog
-    IconProvider.cpp/h      # Custom SVG icons
+    Sidebar.cpp/h           # Боковая панель навигации
+    PlayerBar.cpp/h         # Нижняя панель управления воспроизведением
+    LibraryView.cpp/h       # Просмотр треков, плейлистов, исполнителей
+    DownloadsView.cpp/h     # Интерфейс загрузки YouTube
+    SettingsView.cpp/h      # Настройки приложения (тема, язык, пути)
+    AuthView.cpp/h          # Экран входа/регистрации
+    MiniPlayer.cpp/h        # Компактный плавающий плеер
+    TrackCard.cpp/h         # Карточка трека
+    TrackList.cpp/h         # Список треков с сортировкой
+    EditTrackDialog.cpp/h   # Диалог редактирования метаданных
+    IconProvider.cpp/h      # Пользовательские SVG иконки
   utils/
-    TranslationManager.h    # i18n (EN/RU/UK/RU-PreReform)
-    StyleManager.cpp/h      # Theme definitions and switching
+    TranslationManager.h    # Локализация (EN/RU/UK/RU-PreReform)
+    StyleManager.cpp/h      # Определение и переключение тем
 resources/
-  logo.png, logo.ico        # Application icons
-CMakeLists.txt              # Build configuration
-installer.iss               # Inno Setup script
-build_installer.bat         # Build + package automation
+  logo.png, logo.ico        # Иконки приложения
+CMakeLists.txt              # Конфигурация сборки
+installer.iss               # Скрипт Inno Setup
+build_installer.bat         # Автоматизация сборки и упаковки
 ```
 
-## License
+## Лицензия
 
 [Apache-2.0](LICENSE)
