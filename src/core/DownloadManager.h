@@ -27,6 +27,7 @@ public:
     void setForceIPv6(bool enabled);
     void setLegacyServerConnect(bool enabled);
     void setProxy(const QString &proxy);
+    void setDownloadPlaylist(bool enabled);
 
     bool startDownload(const QString &url);
     void cancelDownload();
@@ -36,6 +37,7 @@ signals:
     void progressUpdated(int percentage);
     void statusUpdated(const QString &statusText);
     void downloadCompleted(const QString &filePath);
+    void downloadPlaylistCompleted(const QStringList &filePaths);
     void downloadFailed(const QString &errorReason);
 
 private slots:
@@ -63,6 +65,7 @@ private:
     bool m_forceIPv6 = false;
     bool m_legacyServerConnect = false;
     QString m_proxy;
+    bool m_downloadPlaylist = false;
     
     void parseOutputLine(const QString &line);
     void applyMetadataFromJson(const QString &mp3Path);

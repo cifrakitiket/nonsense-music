@@ -23,9 +23,11 @@ DownloadsView::DownloadsView(DownloadManager *dlMgr, LibraryManager *libMgr, QWi
     connect(m_downloadManager, &DownloadManager::progressUpdated, this, &DownloadsView::onProgressUpdated);
     connect(m_downloadManager, &DownloadManager::statusUpdated, this, &DownloadsView::onStatusUpdated);
     connect(m_downloadManager, &DownloadManager::downloadCompleted, this, &DownloadsView::onDownloadCompleted);
+    connect(m_downloadManager, &DownloadManager::downloadPlaylistCompleted, this, &DownloadsView::onDownloadPlaylistCompleted);
     connect(m_downloadManager, &DownloadManager::downloadFailed, this, &DownloadsView::onDownloadFailed);
 
     // Bypass UI connections
+    connect(m_playlistCheck, &QCheckBox::toggled, this, &DownloadsView::saveBypassSettings);
     connect(m_cookiesCheck, &QCheckBox::toggled, this, &DownloadsView::saveBypassSettings);
     connect(m_byedpiCheck, &QCheckBox::toggled, this, [this](bool checked) {
         m_byedpiHostInput->setEnabled(checked);
@@ -101,6 +103,11 @@ void DownloadsView::setupUI() {
     
     mainLayout->addWidget(m_progressBar);
     mainLayout->addWidget(m_statusLabel);
+
+    // --- Download Mode ---
+    m_playlistCheck = new QCheckBox(trL("dl_download_playlist"), this);
+    m_playlistCheck->setCursor(Qt::PointingHandCursor);
+    mainLayout->addWidget(m_playlistCheck);
 
     // --- Bypass Section ---
     m_bypassHeaderLabel = new QLabel(trL("dl_bypass_header"), this);
@@ -200,6 +207,7 @@ void DownloadsView::retranslateUI() {
     m_downloadBtn->setText(trL("btn_download"));
     m_cancelBtn->setText(trL("btn_cancel"));
     m_bypassHeaderLabel->setText(trL("dl_bypass_header"));
+    m_playlistCheck->setText(trL("dl_download_playlist"));
     m_cookiesCheck->setText(trL("dl_use_cookies"));
     m_byedpiCheck->setText(trL("dl_use_byedpi"));
     m_geoBypassCheck->setText(trL("dl_geo_bypass"));
@@ -210,6 +218,7 @@ void DownloadsView::retranslateUI() {
 
 void DownloadsView::loadBypassSettings() {
     QSettings s("NonsenseMusic", "Player");
+    m_playlistCheck->setChecked(s.value("bypass/playlist", false).toBool());
     m_cookiesCheck->setChecked(s.value("bypass/cookies", false).toBool());
     int pcIdx = s.value("bypass/playerClient", 0).toInt();
     if (pcIdx >= 0 && pcIdx < m_playerClientCombo->count())
@@ -228,6 +237,7 @@ void DownloadsView::loadBypassSettings() {
 
 void DownloadsView::saveBypassSettings() {
     QSettings s("NonsenseMusic", "Player");
+    s.setValue("bypass/playlist", m_playlistCheck->isChecked());
     s.setValue("bypass/cookies", m_cookiesCheck->isChecked());
     s.setValue("bypass/playerClient", m_playerClientCombo->currentIndex());
     s.setValue("bypass/byedpi", m_byedpiCheck->isChecked());
@@ -269,6 +279,7 @@ void DownloadsView::onDownloadClicked() {
     m_downloadManager->setForceIPv6(m_forceIPv6Check->isChecked());
     m_downloadManager->setLegacyServerConnect(m_legacySslCheck->isChecked());
     m_downloadManager->setProxy(m_proxyInput->text());
+    m_downloadManager->setDownloadPlaylist(m_playlistCheck->isChecked());
 
     m_downloadManager->startDownload(url);
 }
@@ -307,6 +318,22 @@ void DownloadsView::onDownloadCompleted(const QString &filePath) {
     
     // Ask user which playlist to add to
     showPlaylistSelector(filePath);
+}
+
+void DownloadsView::onDownloadPlaylistCompleted(const QStringList &filePaths) {
+    // Add all downloaded tracks to library
+    for (const QString &path : filePaths) {
+        m_libraryManager->addTrack(path);
+    }
+
+    m_statusLabel->setText(QString("Finished! %1 tracks downloaded.").arg(filePaths.size()));
+    m_statusLabel->setStyleSheet(QString("color: %1;").arg(StyleManager::accent()));
+
+    m_downloadBtn->setEnabled(true);
+    m_cancelBtn->setEnabled(false);
+    m_urlInput->setEnabled(true);
+    m_urlInput->clear();
+    m_progressBar->setVisible(false);
 }
 
 void DownloadsView::showPlaylistSelector(const QString &filePath) {
@@ -474,6 +501,7 @@ void DownloadsView::refreshStyle() {
 
     // Style bypass checkboxes
     QString checkStyle = QString("color: %1; font-size: 13px; spacing: 8px;").arg(StyleManager::textPrimary());
+    m_playlistCheck->setStyleSheet(checkStyle);
     m_cookiesCheck->setStyleSheet(checkStyle);
     m_byedpiCheck->setStyleSheet(checkStyle);
     m_geoBypassCheck->setStyleSheet(checkStyle);

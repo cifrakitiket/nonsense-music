@@ -28,6 +28,7 @@ private slots:
     void onProgressUpdated(int percent);
     void onStatusUpdated(const QString &text);
     void onDownloadCompleted(const QString &filePath);
+    void onDownloadPlaylistCompleted(const QStringList &filePaths);
     void onDownloadFailed(const QString &error);
 
 private:
@@ -43,6 +44,7 @@ private:
     QLabel *m_statusLabel;
 
     // Bypass UI
+    QCheckBox *m_playlistCheck;
     QCheckBox *m_cookiesCheck;
     QCheckBox *m_byedpiCheck;
     QLineEdit *m_byedpiHostInput;

@@ -80,6 +80,7 @@ private:
 
         // Download Bypass Section
         add("dl_bypass_header", "Bypass & Anti-Blocking", "Обход блокировок", "Обхід блокувань", "Обходъ блокировокъ");
+        add("dl_download_playlist", "Download entire YouTube playlist", "Скачать весь плейлист YouTube", "Завантажити весь плейлист YouTube", "Скачать весь плейлистъ YouTube");
         add("dl_use_cookies", "Use Chrome cookies (bypass bot check)", "Куки Chrome (обход бот-проверки)", "Куки Chrome (обхід бот-перевірки)", "Куки Chrome (обходъ бот-проверки)");
         add("dl_player_client", "Player client:", "Клиент плеера:", "Клієнт плеєра:", "Клієнт плеєра:");
         add("dl_pc_default", "Default (auto)", "По умолчанию (авто)", "За замовчуванням (авто)", "По умолчанию (авто)");

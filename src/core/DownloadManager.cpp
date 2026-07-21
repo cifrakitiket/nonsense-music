@@ -63,6 +63,7 @@ void DownloadManager::setForceIPv4(bool enabled) { m_forceIPv4 = enabled; }
 void DownloadManager::setForceIPv6(bool enabled) { m_forceIPv6 = enabled; }
 void DownloadManager::setLegacyServerConnect(bool enabled) { m_legacyServerConnect = enabled; }
 void DownloadManager::setProxy(const QString &proxy) { m_proxy = proxy; }
+void DownloadManager::setDownloadPlaylist(bool enabled) { m_downloadPlaylist = enabled; }
 
 bool DownloadManager::startDownload(const QString &url) {
     if (m_isDownloading) {
@@ -136,10 +137,17 @@ bool DownloadManager::startDownload(const QString &url) {
          << "--audio-format" << "mp3"
          << "--audio-quality" << "0"
          << "--embed-thumbnail"
-         << "--write-info-json"
-         << "--no-playlist"
-         << "-o" << m_downloadDir + "/%(title)s.%(ext)s"
-         << url;
+         << "--write-info-json";
+
+    if (m_downloadPlaylist) {
+        // Download entire playlist, organize by playlist name
+        args << "-o" << m_downloadDir + "/%(playlist_title)s/%(title)s.%(ext)s";
+    } else {
+        args << "--no-playlist"
+             << "-o" << m_downloadDir + "/%(title)s.%(ext)s";
+    }
+
+    args << url;
          
     m_process->start(m_ytDlpPath, args);
     return true;
@@ -256,32 +264,51 @@ void DownloadManager::applyMetadataFromJson(const QString &mp3Path) {
 
 void DownloadManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
     m_isDownloading = false;
-    
+
     if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-        if (!m_downloadedFile.isEmpty() && QFile::exists(m_downloadedFile)) {
-            // Apply metadata from .info.json (uploader as artist)
-            applyMetadataFromJson(m_downloadedFile);
-            
-            emit progressUpdated(100);
-            emit statusUpdated("Download and conversion complete!");
-            emit downloadCompleted(m_downloadedFile);
-        } else {
-            // Fallback: scan directory for newest mp3
+        if (m_downloadPlaylist) {
+            // Playlist mode: scan download dir for all MP3 files
             QDir dir(m_downloadDir);
             dir.setNameFilters(QStringList() << "*.mp3");
             dir.setSorting(QDir::Time);
             QFileInfoList list = dir.entryInfoList();
-            if (!list.isEmpty()) {
-                QString newestFile = list.first().absoluteFilePath();
-                
-                // Apply metadata from .info.json
-                applyMetadataFromJson(newestFile);
-                
+
+            QStringList downloadedFiles;
+            for (const QFileInfo &fi : list) {
+                QString path = fi.absoluteFilePath();
+                applyMetadataFromJson(path);
+                downloadedFiles.append(path);
+            }
+
+            if (!downloadedFiles.isEmpty()) {
                 emit progressUpdated(100);
-                emit statusUpdated("Download complete!");
-                emit downloadCompleted(newestFile);
+                emit statusUpdated(QString("Playlist download complete! %1 tracks.").arg(downloadedFiles.size()));
+                emit downloadPlaylistCompleted(downloadedFiles);
             } else {
-                emit downloadFailed("Could not locate downloaded MP3 file.");
+                emit downloadFailed("No MP3 files found after playlist download.");
+            }
+        } else {
+            // Single track mode
+            if (!m_downloadedFile.isEmpty() && QFile::exists(m_downloadedFile)) {
+                applyMetadataFromJson(m_downloadedFile);
+                emit progressUpdated(100);
+                emit statusUpdated("Download and conversion complete!");
+                emit downloadCompleted(m_downloadedFile);
+            } else {
+                // Fallback: scan directory for newest mp3
+                QDir dir(m_downloadDir);
+                dir.setNameFilters(QStringList() << "*.mp3");
+                dir.setSorting(QDir::Time);
+                QFileInfoList list = dir.entryInfoList();
+                if (!list.isEmpty()) {
+                    QString newestFile = list.first().absoluteFilePath();
+                    applyMetadataFromJson(newestFile);
+                    emit progressUpdated(100);
+                    emit statusUpdated("Download complete!");
+                    emit downloadCompleted(newestFile);
+                } else {
+                    emit downloadFailed("Could not locate downloaded MP3 file.");
+                }
             }
         }
     } else {
