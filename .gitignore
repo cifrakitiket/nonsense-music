@@ -1,0 +1,21 @@
+# Build output
+build/
+Release_Installer/
+deploy/
+
+# IDE
+.qtcreator/
+.mimocode/
+
+# Binaries and archives
+*.exe
+*.zip
+*.dll
+
+# Python utility scripts
+*.py
+
+# Qt Creator user files
+*.pro.user
+*.qbs.user
+CMakeLists.txt.user
