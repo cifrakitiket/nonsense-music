@@ -53,6 +53,17 @@ QString DownloadManager::downloadDirectory() const {
     return m_downloadDir;
 }
 
+void DownloadManager::setUseCookiesFromBrowser(bool enabled) { m_useCookies = enabled; }
+void DownloadManager::setPlayerClient(const QString &client) { m_playerClient = client; }
+void DownloadManager::setUseByeDpi(bool enabled) { m_useByeDpi = enabled; }
+void DownloadManager::setByeDpiHost(const QString &host) { m_byeDpiHost = host; }
+void DownloadManager::setGeoBypass(bool enabled) { m_geoBypass = enabled; }
+void DownloadManager::setGeoBypassCountry(const QString &country) { m_geoBypassCountry = country; }
+void DownloadManager::setForceIPv4(bool enabled) { m_forceIPv4 = enabled; }
+void DownloadManager::setForceIPv6(bool enabled) { m_forceIPv6 = enabled; }
+void DownloadManager::setLegacyServerConnect(bool enabled) { m_legacyServerConnect = enabled; }
+void DownloadManager::setProxy(const QString &proxy) { m_proxy = proxy; }
+
 bool DownloadManager::startDownload(const QString &url) {
     if (m_isDownloading) {
         emit downloadFailed("Download already in progress.");
@@ -77,17 +88,53 @@ bool DownloadManager::startDownload(const QString &url) {
     emit statusUpdated("Starting download...");
     
     QStringList args;
-    
-    // Mimic Chrome (removed --impersonate to avoid errors with standard builds)
+
+    // Mimic Chrome
     args << "--user-agent" << "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
          << "--referer" << "https://www.youtube.com/"
          << "--add-header" << "Accept-Language: en-US,en;q=0.9"
          << "--add-header" << "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
-    
+
+    // Bypass: cookies from Chrome browser
+    if (m_useCookies) {
+        args << "--cookies-from-browser" << "chrome";
+    }
+
+    // Bypass: player client selection
+    if (!m_playerClient.isEmpty()) {
+        args << "--extractor-args" << "youtube:player_client=" + m_playerClient;
+    }
+
+    // Bypass: proxy (supports socks5://, http://, etc.)
+    if (!m_proxy.isEmpty()) {
+        args << "--proxy" << m_proxy;
+    }
+
+    // Bypass: geo-bypass
+    if (m_geoBypass) {
+        args << "--geo-bypass";
+        if (!m_geoBypassCountry.isEmpty()) {
+            args << "--geo-bypass-country" << m_geoBypassCountry;
+        }
+    }
+
+    // Bypass: force IPv4/IPv6
+    if (m_forceIPv4) {
+        args << "--force-ipv4";
+    }
+    if (m_forceIPv6) {
+        args << "--force-ipv6";
+    }
+
+    // Bypass: legacy server connect (old SSL certs)
+    if (m_legacyServerConnect) {
+        args << "--legacy-server-connect";
+    }
+
     // Download best audio, extract as mp3, write metadata JSON for artist extraction
-    args << "-x" 
-         << "--audio-format" << "mp3" 
-         << "--audio-quality" << "0" 
+    args << "-x"
+         << "--audio-format" << "mp3"
+         << "--audio-quality" << "0"
          << "--embed-thumbnail"
          << "--write-info-json"
          << "--no-playlist"

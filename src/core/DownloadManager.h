@@ -12,9 +12,21 @@ public:
 
     void setYtDlpPath(const QString &path);
     QString ytDlpPath() const;
-    
+
     void setDownloadDirectory(const QString &dir);
     QString downloadDirectory() const;
+
+    // Bypass options
+    void setUseCookiesFromBrowser(bool enabled);
+    void setPlayerClient(const QString &client);
+    void setUseByeDpi(bool enabled);
+    void setByeDpiHost(const QString &host);
+    void setGeoBypass(bool enabled);
+    void setGeoBypassCountry(const QString &country);
+    void setForceIPv4(bool enabled);
+    void setForceIPv6(bool enabled);
+    void setLegacyServerConnect(bool enabled);
+    void setProxy(const QString &proxy);
 
     bool startDownload(const QString &url);
     void cancelDownload();
@@ -39,6 +51,18 @@ private:
     QString m_lastErrorMsg;
     QString m_stderrBuffer;
     bool m_isDownloading = false;
+
+    // Bypass settings
+    bool m_useCookies = false;
+    QString m_playerClient;
+    bool m_useByeDpi = false;
+    QString m_byeDpiHost;
+    bool m_geoBypass = false;
+    QString m_geoBypassCountry;
+    bool m_forceIPv4 = false;
+    bool m_forceIPv6 = false;
+    bool m_legacyServerConnect = false;
+    QString m_proxy;
     
     void parseOutputLine(const QString &line);
     void applyMetadataFromJson(const QString &mp3Path);

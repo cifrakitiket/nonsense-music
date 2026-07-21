@@ -78,6 +78,17 @@ private:
         add("mimic_chrome", "Mimic Google Chrome browser client", "Маскировка под браузер Google Chrome", "Маскування під браузер Google Chrome", "Маскировка подъ браузеръ Google Chrome");
         add("use_cookies", "Use Chrome browser cookies (bypass bot check)", "Использовать куки браузера Chrome", "Використовувати куки браузера Chrome", "Использовать куки браузера Chrome");
 
+        // Download Bypass Section
+        add("dl_bypass_header", "Bypass & Anti-Blocking", "Обход блокировок", "Обхід блокувань", "Обходъ блокировокъ");
+        add("dl_use_cookies", "Use Chrome cookies (bypass bot check)", "Куки Chrome (обход бот-проверки)", "Куки Chrome (обхід бот-перевірки)", "Куки Chrome (обходъ бот-проверки)");
+        add("dl_player_client", "Player client:", "Клиент плеера:", "Клієнт плеєра:", "Клієнт плеєра:");
+        add("dl_pc_default", "Default (auto)", "По умолчанию (авто)", "За замовчуванням (авто)", "По умолчанию (авто)");
+        add("dl_use_byedpi", "ByeDPI proxy (DPI bypass):", "ByeDPI прокси (обход DPI):", "ByeDPI проксі (обхід DPI):", "ByeDPI прокси (обходъ DPI):");
+        add("dl_geo_bypass", "Geo-bypass (region unlock):", "Гео-обход (разблокировка региона):", "Гео-обхід (розблокування регіону):", "Гео-обходъ (разблокировкаъ регіона):");
+        add("dl_geo_country_hint", "Country code (US, DE...)", "Код страны (US, DE...)", "Код країни (US, DE...)", "Кодъ страны (US, DE...)");
+        add("dl_legacy_ssl", "Legacy SSL", "Старый SSL", "Старий SSL", "Старый SSL");
+        add("dl_proxy", "Proxy:", "Прокси:", "Проксі:", "Прокси:");
+
         // Settings Screen
         add("settings_title", "Settings", "Настройки", "Налаштування", "Настройки");
         add("settings_dynamic_bg", "Dynamic Background (Cover Art)", "Динамический фон (обложка трека)", "Динамічний фон (обкладинка треку)", "Динамическій фонъ (обложка трека)");
