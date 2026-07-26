@@ -18,7 +18,7 @@
 // Helper to convert QString to TagLib::FileName
 static TagLib::FileName toFileName(const QString &path) {
 #ifdef _WIN32
-    return TagLib::FileName(reinterpret_cast<const wchar_t*>(path.utf16()));
+    return TagLib::FileName(path.toStdWString().c_str());
 #else
     return TagLib::FileName(path.toUtf8().constData());
 #endif
