@@ -101,14 +101,21 @@ bool DownloadManager::startDownload(const QString &url) {
         args << "--cookies-from-browser" << "chrome";
     }
 
-    // Bypass: player client selection
-    if (!m_playerClient.isEmpty()) {
-        args << "--extractor-args" << "youtube:player_client=" + m_playerClient;
+    // Bypass: player client selection (default to mweb,android,ios to prevent 'Requested format is not available')
+    QString playerClient = m_playerClient.trimmed();
+    if (playerClient.isEmpty() || playerClient == "web") {
+        playerClient = "mweb,android,ios";
     }
+    args << "--extractor-args" << "youtube:player_client=" + playerClient;
 
     // Bypass: proxy (supports socks5://, http://, etc.)
     if (!m_proxy.isEmpty()) {
         args << "--proxy" << m_proxy;
+    } else if (m_useByeDpi) {
+        QString host = m_byeDpiHost.trimmed();
+        if (host.isEmpty()) host = "127.0.0.1:8080";
+        if (!host.contains("://")) host = "http://" + host;
+        args << "--proxy" << host;
     }
 
     // Bypass: geo-bypass
@@ -132,8 +139,15 @@ bool DownloadManager::startDownload(const QString &url) {
         args << "--legacy-server-connect";
     }
 
+    // FFmpeg location check
+    QString ffmpegPath = QCoreApplication::applicationDirPath() + "/ffmpeg.exe";
+    if (QFile::exists(ffmpegPath)) {
+        args << "--ffmpeg-location" << ffmpegPath;
+    }
+
     // Download best audio, extract as mp3, write metadata JSON for artist extraction
-    args << "-x"
+    args << "-f" << "ba/b/best"
+         << "-x"
          << "--audio-format" << "mp3"
          << "--audio-quality" << "0"
          << "--embed-thumbnail"
